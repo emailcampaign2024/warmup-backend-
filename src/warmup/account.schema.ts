@@ -6,7 +6,7 @@ export class AccountCredentials extends Document {
   @Prop()
   fromName: string;
 
-  @Prop()
+  @Prop({ unique: true })
   fromEmail: string;
 
   @Prop()
