@@ -27,4 +27,20 @@ export class WarmupController {
 async create(@Body() configData: any) {
   return this.warmupService.create(configData);
 }
+
+@Get('getAll')
+async getAllConfigs() {
+  try {
+    const configs = await this.warmupService.findAll();
+    return {
+      success: true,
+      configs,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: `Failed to retrieve configs, Error: ${error.message}`,
+    };
+  }
+}
 }

@@ -50,4 +50,7 @@ export class WarmupService {
     const createdConfig = new this.accountCredentialsModel(accountCredentialsModel);
     return createdConfig.save();
   }
+  async findAll(): Promise<AccountCredentials[]> {
+    return this.accountCredentialsModel.find().exec();
+  }
 }
