@@ -46,14 +46,8 @@ export class WarmupService {
       };
     }
   }
-
-//   async create(accountCredentials: AccountCredentials): Promise<AccountCredentials> {
-//     const newAccountCredentials = new this.accountCredentialsModel(accountCredentials);
-//     return await newAccountCredentials.save();
-//   }
-  async create(email: string, password: string): Promise<AccountCredentials> {
-    const createdEmailCredentials = new this.accountCredentialsModel({ email: email, password });
-    console.log(createdEmailCredentials,"jjjjjjj");
-    return createdEmailCredentials.save();
+  async create(accountCredentialsModel: any): Promise<AccountCredentials> {
+    const createdConfig = new this.accountCredentialsModel(accountCredentialsModel);
+    return createdConfig.save();
   }
 }

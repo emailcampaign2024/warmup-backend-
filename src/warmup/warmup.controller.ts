@@ -23,23 +23,8 @@ export class WarmupController {
     }
   }
 
-//   @Post('accountadd')
-//   async create(accountCredentials: AccountCredentials): Promise<AccountCredentials> {
-//     try {
-//       const newAccountCredentials = await this.warmupService.create(accountCredentials);
-//       return newAccountCredentials;
-//     } catch (error) {
-//       throw new HttpException('Failed to create account credentials', HttpStatus.BAD_REQUEST);
-//     }
-//   }
-  @Post("accountadd")
-   async createEmailCredentials(@Body('email') email: string, @Body('password') password: string) {
-  try {
-    console.log(email, password);
-    const createdEmailCredentials = await this.warmupService.create(email, password);
-    return { message: 'Email credentials created successfully', data: createdEmailCredentials };
-  } catch (error) {
-    return { error: error.message };
-  }
+@Post('accountadd')
+async create(@Body() configData: any) {
+  return this.warmupService.create(configData);
 }
 }

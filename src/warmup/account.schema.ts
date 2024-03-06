@@ -3,11 +3,38 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class AccountCredentials extends Document {
-  @Prop({ required: true, unique: true })
-  email: string;
+  @Prop()
+  fromName: string;
 
-  @Prop({ required: true })
-  password: string;
+  @Prop()
+  fromEmail: string;
+
+  @Prop()
+  userName: string;
+
+  @Prop()
+  appPassword: string;
+
+  @Prop()
+  smtpHost: string;
+
+  @Prop()
+  smtpPort: number;
+
+  @Prop()
+  messagePerDay: string;
+
+  @Prop()
+  minimumTimeGap: string;
+
+  @Prop()
+  imapHost: string;
+
+  @Prop()
+  imapPort: string;
+
+  @Prop()
+  tagName: string;
 }
 
-export const EmailCredentialsSchema = SchemaFactory.createForClass(AccountCredentials);
+export const AccountCredentialsSchema = SchemaFactory.createForClass(AccountCredentials);
