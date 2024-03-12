@@ -5,30 +5,73 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Warmupisactive } from './Warmupisactive.schema';
 import {Server} from './user.model';
+import {Email} from './email.schema';
 
 @Injectable()
 export class WarmupService {
   private transporter;
+  private transporters: nodemailer.Transporter[];
 
   constructor(@InjectModel(AccountCredentials.name) private readonly accountCredentialsModel: Model<AccountCredentials>,
   @InjectModel(Warmupisactive.name) private readonly WarmupisactiveModel: Model<Warmupisactive>,
+  @InjectModel(Email.name) private readonly emailModel: Model<Email>,
   @InjectModel(Server.name) private readonly ServerModel: Model<Server>) {
-    const accountCredentialsData = this.accountCredentialsModel.find().sort({ _id: -1 }).exec();
-    console.log(accountCredentialsData,"jkjkkkk");
-    // const emailuser = accountCredentialsData[0].fromEmail;
-    // const emailpass = accountCredentialsData[0].appPassword;
-    // console.log(emailuser,emailpass,"aurthrrbrbrb");
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: "emailuser",
-        pass: "emailpass",
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+  
+    // this.transporter = nodemailer.createTransport({
+    //   service: 'gmail',
+    //   auth: {
+    //     user: "gokulsidharth02@gmail.com",
+    //     pass: "edsgthytjykdkkj",
+    //   },
+    //   tls: {
+    //     rejectUnauthorized: false,
+    //   },
+    // });
+    this.setupTransporters();
+    // this.initializeTransporter();
   }
+
+  private async setupTransporters(): Promise<void> {
+    const accountdata = await this.WarmupfindAll();
+    console.log(accountdata,"kkkkkkkkkkkkkkkkk");
+    this.transporters = [];
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: accountdata.fromEmail, // Use 'fromEmail' instead of 'user'
+          pass: accountdata.appPassword, // Use 'appPassword' instead of 'password'
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
+      });
+
+      // Push the created transporter to the array
+      this.transporters.push(transporter);
+    
+      
+  }
+ 
+
+    // async initializeTransporter() {
+    //   try {
+    //     const accountdata = await this.WarmupfindAll(); // Await here to get the resolved value
+    //     console.log(accountdata, "2222222222222222222222222");
+    //     this.transporter = nodemailer.createTransport({
+    //       service: 'gmail',
+    //       auth: {
+    //         user: "gokulsidharth02@gmail.com", // Now you can access properties after awaiting the Promise accountdata.fromEmail,accountdata.appPassword
+    //         pass: "edsgthytjykdkkj",
+    //       },
+    //       tls: {
+    //         rejectUnauthorized: false,
+    //       },
+    //     });
+    //   } catch (error) {
+    //     console.error('Error initializing transporter:', error);
+    //     // Handle the error appropriately (e.g., throw an exception)
+    //   }
+    // }
 
   async sendEmail(fromEmail: string, to: string) {
     const mailOptions = {
@@ -42,6 +85,14 @@ export class WarmupService {
     try {
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Email sent successfully');
+      const email = new this.emailModel({
+        from: fromEmail,
+        to: to,
+        subject: "Email warm-up",
+        text: "As we’ve already mentioned, email warm-up is about building a positive reputation. To ensure that their users have the best experience possible, ESPs like Gmail and Outlook will check a sender’s reputation before allowing their email through.",
+        sentAt: new Date(),
+      });
+      await email.save();
       return {
         success : true ,
         message: 'email sent successfully' ,
@@ -63,8 +114,9 @@ export class WarmupService {
   }
 
   async findAll(): Promise<AccountCredentials[]> {
-    // const accountdata = this.WarmupfindAll();
-    // console.log(accountdata,"1111111111111111111");
+    // const accountdata = await this.WarmupfindAll();
+    // // const accountdata = this.WarmupfindAll();
+    // console.log(accountdata,"1111111111111111111",accountdata.fromEmail);
     return this.accountCredentialsModel.find().exec();
   }
   async creating(WarmupisactiveModel: any): Promise<Warmupisactive> {
@@ -77,7 +129,7 @@ export class WarmupService {
 
   async WarmupfindAll(): Promise<AccountCredentials| null> {
     const warmupData = await this.WarmupisactiveModel.find().exec();
-    console.log('Warmup Data:', warmupData);
+    console.log('Warmup Data:', warmupData, warmupData[0].isOn);
     if (warmupData.length === 0) {
       throw new NotFoundException('No warmup data found.');
     }
@@ -87,7 +139,7 @@ export class WarmupService {
       if (!accountCredentialsData) {
         throw new NotFoundException('No corresponding account credentials found.');
       }
-      console.log(accountCredentialsData.fromEmail, accountCredentialsData.appPassword);
+      // console.log(accountCredentialsData.fromEmail, accountCredentialsData.appPassword);
       const serverData = await this.ServerModel.find().exec();
      
       for (const server of serverData) {
@@ -96,6 +148,7 @@ export class WarmupService {
         // Wait for 5 minutes (300000 milliseconds) before sending the next email
         await new Promise(resolve => setTimeout(resolve, 300000));
       }
+      // console.log(accountCredentialsData,"jjjjjjjjjjjjjjjjjjjj");
       return accountCredentialsData;
   }
  
