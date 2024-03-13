@@ -55,7 +55,7 @@ async getAccountCredentialsById(@Param('id') id: string) {
   }
 }
 
-@Put('updateWarmup:id')
+@Put('updateWarmup/:id')
 async updateWarmup(@Param('id') id: string, @Body() updateData: any) {
   try {
     const updatedWarmup = await this.warmupService.update(id, updateData);
@@ -69,9 +69,16 @@ async updateWarmup(@Param('id') id: string, @Body() updateData: any) {
   }
 }
 
+@Put('updateaccount/:id')
+async updateAccountCredentials(@Param('id') id: string, @Body() accountCredentialsModel: any): Promise<AccountCredentials> {
+  return this.warmupService.updateAccountCredentials(id, accountCredentialsModel);
+}
+
 @Post('warmupisactive')
 async WarmupisactiveModel(@Body() WarmupisactiveModel: any) {
   return this.warmupService.creating(WarmupisactiveModel);
 }
+
+
 
 }

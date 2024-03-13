@@ -318,6 +318,16 @@ export class WarmupService {
     return createdConfig.save();
   }
 
+  async updateAccountCredentials(id: string, updateData: any): Promise<AccountCredentials> {
+    const existingAccountCredentials = await this.accountCredentialsModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    
+    if (!existingAccountCredentials) {
+      throw new NotFoundException(`Account credentials with ID ${id} not found`);
+    }
+
+    return existingAccountCredentials;
+  }
+
   async findAll(): Promise<AccountCredentials[]> {
     return this.accountCredentialsModel.find().exec();
   }
