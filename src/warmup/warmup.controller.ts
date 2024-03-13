@@ -55,7 +55,7 @@ async getAccountCredentialsById(@Param('id') id: string) {
   }
 }
 
-@Put(':id')
+@Put('updateWarmup:id')
 async updateWarmup(@Param('id') id: string, @Body() updateData: any) {
   try {
     const updatedWarmup = await this.warmupService.update(id, updateData);
