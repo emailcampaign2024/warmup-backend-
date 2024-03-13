@@ -346,18 +346,34 @@ export class WarmupService {
   //   return updatedDocument;
   // }
 
-  async update(id: string, updateData: any): Promise<Warmupisactive | null> {
-    console.log(id,"idddddddddddddddddddd");
-    // Remove the colon ':' from the beginning of the ID value
-    const cleanedId = id.replace(':', '');
+  // async update(id: string, updateData: any): Promise<Warmupisactive | null> {
+  //   console.log(id,"idddddddddddddddddddd");
+  //   // Remove the colon ':' from the beginning of the ID value
+  //   const cleanedId = id.replace(':', '');
     
-    const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(cleanedId, updateData, { new: true }).exec();
+  //   const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(cleanedId, updateData, { new: true }).exec();
     
-    if (!updatedDocument) {
-      throw new NotFoundException(`Warmupisactive with ID ${cleanedId} not found`);
-    }
+  //   if (!updatedDocument) {
+  //     throw new NotFoundException(`Warmupisactive with ID ${cleanedId} not found`);
+  //   }
   
-    return updatedDocument;
+  //   return updatedDocument;
+  // }
+
+  async update(id: string, updateData: any): Promise<Warmupisactive> {
+    const cleanedId = id.replace(':', '');
+    const existingWarmup = await this.WarmupisactiveModel.findOne({ id: cleanedId }).exec();
+    if (!existingWarmup) {
+      throw new NotFoundException(`Warmup with ID ${id} not found`);
+    }
+
+    // Update the existingWarmup object with the provided updateData
+    Object.assign(existingWarmup, updateData);
+
+    // Save the updated document
+    const updatedWarmup = await existingWarmup.save();
+    
+    return updatedWarmup;
   }
 
 

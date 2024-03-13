@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Warmupisactive extends Document {
-  @Prop({ unique: true })
+  @Prop({ required: true, unique: true })
   id: string;
 
   @Prop({ required: true })
