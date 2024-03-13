@@ -197,31 +197,76 @@ export class WarmupService {
     this.setupTransporters();
   }
 
+  // private async setupTransporters(): Promise<void> {
+  //   try {
+  //     const accountdata = await this.WarmupfindAll();
+  //     console.log(accountdata,"jjjjjjjjjjjjjj",accountdata.accountCredentialsData.fromEmail,accountdata.perday);
+  //     if (accountdata) {
+  //       const transporter = nodemailer.createTransport({
+  //         service: 'gmail',
+  //         auth: {
+  //           user: accountdata.accountCredentialsData.fromEmail,
+  //           pass: accountdata.accountCredentialsData.appPassword,
+  //         },
+  //         tls: {
+  //           rejectUnauthorized: false,
+  //         },
+  //         connectionTimeout: 20000,  
+  //       });
+        
+  //       this.transporters.push(transporter)
+  //       const serverData = await this.ServerModel.find().exec();
+       
+  //     for (const server of serverData) {
+  //       // console.log(accountdata , 'accountData')
+  //       // console.log(server.email)
+  //       await this.sendEmail(accountdata.accountCredentialsData.fromEmail, server.email);
+  //       await new Promise(resolve => setTimeout(resolve, 300000));
+  //     }
+  //     } else {
+  //       console.error('Error setting up transporters: Account data is undefined');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error setting up transporters:', error);
+  //     // Handle the error appropriately (e.g., throw an exception)
+  //   }
+  // }
+ 
   private async setupTransporters(): Promise<void> {
     try {
       const accountdata = await this.WarmupfindAll();
+      console.log(accountdata, "jjjjjjjjjjjjjj", accountdata.accountCredentialsData.fromEmail, accountdata.perday);
       if (accountdata) {
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
-            user: accountdata.fromEmail,
-            pass: accountdata.appPassword,
+            user: accountdata.accountCredentialsData.fromEmail,
+            pass: accountdata.accountCredentialsData.appPassword,
           },
           tls: {
             rejectUnauthorized: false,
           },
-          connectionTimeout: 20000,  
+          connectionTimeout: 20000,
         });
-        
-        this.transporters.push(transporter)
+  
+        this.transporters.push(transporter);
         const serverData = await this.ServerModel.find().exec();
-       
-      for (const server of serverData) {
-        console.log(accountdata , 'accountData')
-        console.log(server.email)
-        await this.sendEmail(accountdata.fromEmail, server.email);
-        await new Promise(resolve => setTimeout(resolve, 300000));
-      }
+  
+        let sentEmailsCount = 0; // Counter for tracking sent emails
+  
+        for (const server of serverData) {
+          // Check if the sent emails count exceeds the per day limit
+          if (sentEmailsCount >= accountdata.perday) {
+            console.log('Per day email limit reached. Stopping further emails.');
+            break; // Exit the loop if the limit is reached
+          }
+  
+          await this.sendEmail(accountdata.accountCredentialsData.fromEmail, server.email);
+          sentEmailsCount++; // Increment the sent emails count
+  
+          // Wait for 5 minutes (300000 milliseconds) before sending the next email
+          await new Promise(resolve => setTimeout(resolve, 300000));
+        }
       } else {
         console.error('Error setting up transporters: Account data is undefined');
       }
@@ -294,20 +339,24 @@ export class WarmupService {
 
 
 
-  async WarmupfindAll(): Promise<AccountCredentials| null> {
+  async WarmupfindAll(): Promise<{ accountCredentialsData: AccountCredentials | null, perday: number }> {
     const warmupData = await this.WarmupisactiveModel.find().exec();
-    console.log('Warmup Data:', warmupData, warmupData[0].isOn);
+    // console.log('Warmup Data:', warmupData, warmupData[0].isOn);
     if (warmupData.length === 0) {
       throw new NotFoundException('No warmup data found.');
     }
     if (warmupData.length > 0 && warmupData[0].isOn) {
+      const perday = warmupData[0].totalWarmUpEmailsPerDay; 
       // console.log(warmupData[0].id)
       const accountCredentialsData = await this.accountCredentialsModel.findOne({ _id: warmupData[0].id }).exec();
       if (!accountCredentialsData) {
         throw new NotFoundException('No corresponding account credentials found.');
       }
-      return accountCredentialsData;
+      return {accountCredentialsData,perday};
   }
+
+
+  
     
   }
 
