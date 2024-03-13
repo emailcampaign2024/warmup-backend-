@@ -319,7 +319,8 @@ export class WarmupService {
   }
 
   async updateAccountCredentials(id: string, updateData: any): Promise<AccountCredentials> {
-    const existingAccountCredentials = await this.accountCredentialsModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    const cleanedId = id.replace(':', '');
+    const existingAccountCredentials = await this.accountCredentialsModel.findByIdAndUpdate(cleanedId, updateData, { new: true }).exec();
     
     if (!existingAccountCredentials) {
       throw new NotFoundException(`Account credentials with ID ${id} not found`);
@@ -339,11 +340,20 @@ export class WarmupService {
     }
     return accountCredentials;
   }
+ 
 
 
   async creating(WarmupisactiveModel: any): Promise<Warmupisactive> {
     const createdConfig = new this.WarmupisactiveModel(WarmupisactiveModel);
     return createdConfig.save();
+  }
+
+  async WarmupfindById(id: string): Promise<Warmupisactive | null> {
+    const warmup = await this.WarmupisactiveModel.findOne({id:id}).exec();
+    if (!warmup) {
+      throw new NotFoundException(`Warmup with ID ${id} not found`);
+    }
+    return warmup;
   }
  
   // async update(id: string, updateData: any): Promise<Warmupisactive | null> {
