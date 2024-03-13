@@ -55,7 +55,21 @@ async getAccountCredentialsById(@Param('id') id: string) {
   }
 }
 
-@Put('warmupisactive')
+@Put(':id')
+async updateWarmup(@Param('id') id: string, @Body() updateData: any) {
+  try {
+    const updatedWarmup = await this.warmupService.update(id, updateData);
+    return { success: true, warmup: updatedWarmup };
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      return { success: false, message: error.message };
+    }
+    console.error('Error updating warmup:', error);
+    return { success: false, message: 'Failed to update warmup' };
+  }
+}
+
+@Post('warmupisactive')
 async WarmupisactiveModel(@Body() WarmupisactiveModel: any) {
   return this.warmupService.creating(WarmupisactiveModel);
 }

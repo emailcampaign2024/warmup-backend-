@@ -336,7 +336,15 @@ export class WarmupService {
     return createdConfig.save();
   }
  
+  async update(id: string, updateData: any): Promise<Warmupisactive | null> {
+    const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    
+    if (!updatedDocument) {
+      throw new NotFoundException(`Warmupisactive with ID ${id} not found`);
+    }
 
+    return updatedDocument;
+  }
 
 
   async WarmupfindAll(): Promise<{ accountCredentialsData: AccountCredentials | null, perday: number }> {
