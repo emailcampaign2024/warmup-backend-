@@ -252,6 +252,7 @@ export class WarmupService {
         sentAt: new Date(),
       });
       await email.save();
+      console.log(email,"emailemailemailemail")
       return {
         success : true ,
         message: 'email sent successfully' ,
@@ -273,9 +274,6 @@ export class WarmupService {
   }
 
   async findAll(): Promise<AccountCredentials[]> {
-    // const accountdata = await this.WarmupfindAll();
-    // // const accountdata = this.WarmupfindAll();
-    // console.log(accountdata,"1111111111111111111",accountdata.fromEmail);
     return this.accountCredentialsModel.find().exec();
   }
 
