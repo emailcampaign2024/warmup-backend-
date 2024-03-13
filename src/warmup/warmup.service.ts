@@ -405,16 +405,17 @@ export class WarmupService {
     }
     if (warmupData.length > 0 && warmupData[0].isOn) {
       const perday = warmupData[0].totalWarmUpEmailsPerDay; 
-      // console.log(warmupData[0].id)
+      console.log(warmupData[0].id)
       const accountCredentialsData = await this.accountCredentialsModel.findOne({ _id: warmupData[0].id }).exec();
       if (!accountCredentialsData) {
         throw new NotFoundException('No corresponding account credentials found.');
       }
       return {accountCredentialsData,perday};
-  }
-
-
-  
+    }
+    else {
+      // If the condition is not satisfied, return an error response
+      throw new NotFoundException('Warmup is not active.');
+    }
     
   }
 
