@@ -5,7 +5,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Warmupisactive extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   id: string;
 
   @Prop({ required: true })
@@ -18,7 +18,7 @@ export class Warmupisactive extends Document {
   dailyRampUpEnabled: boolean;
 
   @Prop({ required: true })
-  rampUpIncrement: boolean;
+  rampUpIncrement: number;
 }
 
 export const WarmupisactiveSchema = SchemaFactory.createForClass(Warmupisactive);

@@ -336,13 +336,27 @@ export class WarmupService {
     return createdConfig.save();
   }
  
+  // async update(id: string, updateData: any): Promise<Warmupisactive | null> {
+  //   const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    
+  //   if (!updatedDocument) {
+  //     throw new NotFoundException(`Warmupisactive with ID ${id} not found`);
+  //   }
+
+  //   return updatedDocument;
+  // }
+
   async update(id: string, updateData: any): Promise<Warmupisactive | null> {
-    const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(id, updateData, { new: true }).exec();
+    console.log(id,"idddddddddddddddddddd");
+    // Remove the colon ':' from the beginning of the ID value
+    const cleanedId = id.replace(':', '');
+    
+    const updatedDocument = await this.WarmupisactiveModel.findByIdAndUpdate(cleanedId, updateData, { new: true }).exec();
     
     if (!updatedDocument) {
-      throw new NotFoundException(`Warmupisactive with ID ${id} not found`);
+      throw new NotFoundException(`Warmupisactive with ID ${cleanedId} not found`);
     }
-
+  
     return updatedDocument;
   }
 
