@@ -191,7 +191,7 @@ export class WarmupService {
 
   constructor(@InjectModel(AccountCredentials.name) private readonly accountCredentialsModel: Model<AccountCredentials>,
   @InjectModel(Warmupisactive.name) private readonly WarmupisactiveModel: Model<Warmupisactive>,
-  @InjectModel(Email.name) private readonly emailModel: Model<Email>,
+  @InjectModel('Email') private readonly emailModel: Model<Email>,
   @InjectModel(Server.name) private readonly ServerModel: Model<Server>) {
   
     this.setupTransporters();
@@ -277,6 +277,14 @@ export class WarmupService {
     return this.accountCredentialsModel.find().exec();
   }
 
+  async findById(id: string): Promise<AccountCredentials | null> {
+    const accountCredentials = await this.accountCredentialsModel.findById(id).exec();
+    if (!accountCredentials) {
+      throw new NotFoundException(`Account credentials with ID ${id} not found`);
+    }
+    return accountCredentials;
+  }
+
 
   async creating(WarmupisactiveModel: any): Promise<Warmupisactive> {
     const createdConfig = new this.WarmupisactiveModel(WarmupisactiveModel);
@@ -300,8 +308,11 @@ export class WarmupService {
       }
       return accountCredentialsData;
   }
- 
+    
   }
+
+
+
 
 
 

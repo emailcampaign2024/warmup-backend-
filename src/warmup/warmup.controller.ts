@@ -1,4 +1,4 @@
-import { Controller, Get, Post, HttpException, Body, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, HttpException, Body, HttpStatus, Put, Param, NotFoundException } from '@nestjs/common';
 import { WarmupService } from './warmup.service';
 import { AccountCredentials } from './account.schema';
 import { Warmupisactive } from './Warmupisactive.schema';
@@ -41,7 +41,21 @@ async getAllConfigs() {
   }
 }
 
-@Post('warmupisactive')
+@Get(':id')
+async getAccountCredentialsById(@Param('id') id: string) {
+  try {
+    const accountCredentials = await this.warmupService.findById(id);
+    return { success: true, accountCredentials };
+  } catch (error) {
+    if (error instanceof NotFoundException) {
+      return { success: false, message: error.message };
+    }
+    console.error('Error retrieving account credentials:', error);
+    return { success: false, message: 'Failed to retrieve account credentials' };
+  }
+}
+
+@Put('warmupisactive')
 async WarmupisactiveModel(@Body() WarmupisactiveModel: any) {
   return this.warmupService.creating(WarmupisactiveModel);
 }
