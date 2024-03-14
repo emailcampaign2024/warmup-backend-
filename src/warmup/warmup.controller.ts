@@ -41,7 +41,7 @@ async getAllConfigs() {
   }
 }
 
-@Get(':id')
+@Get('account/:id')
 async getAccountCredentialsById(@Param('id') id: string) {
   try {
     const accountCredentials = await this.warmupService.findById(id);
@@ -94,5 +94,28 @@ async WarmupisactiveModel(@Body() WarmupisactiveModel: any) {
 }
 
 
+// @Get('checkSpamid/:id')
+// async checkSpamEmail(@Param('id') id: string): Promise<any> {
+//   try {
+//     console.log("check12345666");
+//     await this.warmupService.checkSpamEmails(id);
+//     return 'Spam emails checked successfully';
+//   } catch (error) {
+//     throw new Error('Failed to check spam emails');
+//   }
+// }
+
+
+@Get('spamcount')
+async checkSpamEmails(): Promise<boolean> {
+  const isSpam = await this.warmupService.checkSpamEmails();
+  return isSpam;
+}
+
+@Get('checkdata')
+async getAnalytics(): Promise<any> {
+  const lastsevenday = await this.warmupService.analytics();
+  return { lastsevenday };
+}
 
 }
