@@ -112,10 +112,10 @@ async checkSpamEmails(): Promise<boolean> {
   return isSpam;
 }
 
-@Get('checkdata')
-async getAnalytics(): Promise<any> {
-  const lastsevenday = await this.warmupService.analytics();
-  return { lastsevenday };
+@Get('checkdata/:id')
+async getAnalytics(@Param('id') id: string): Promise<any> {
+  const fromEmail = await this.warmupService.analytics(id);
+  return { fromEmail };
 }
 
 }

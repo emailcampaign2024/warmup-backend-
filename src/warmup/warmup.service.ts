@@ -385,13 +385,31 @@ export class WarmupService {
       throw error;
     }
   }
+
+  async getEmailCountPerDay(fromEmail: string): Promise<any[]> {
+    const emailCounts = await this.emailModel.aggregate([
+      {
+        $match: { from: fromEmail } 
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$sentAt' } }, 
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 } 
+      }
+    ]).exec();
+
+    return emailCounts;
+  }
   
 
-  async analytics(){
-    const lastsevenday = this.aggregateSpamEmailsByDate()
-    console.log(lastsevenday,"lastsevenday");
-    const spam = this.checkSentEmailInInbox()
-    console.log(spam,"spamspamspam");    
+  async analytics(id: string){
+    const lastsevenday = this.getEmailCountPerDay(id)
+    console.log(lastsevenday,"lastsevenday");  
+    return lastsevenday;
   }
 
 
