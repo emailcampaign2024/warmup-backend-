@@ -361,11 +361,12 @@ export class WarmupService {
 }
 
   
-  async aggregateSpamEmailsByDate() {
+  async aggregateSpamEmailsByDate(fromEmail:string) {
     try {
       const aggregationResult = await this.emailModel.aggregate([
         {
           $match: {
+            from: fromEmail,
             "sentAt": {
               $gte: new Date(Number(new Date()) - 7 * 24 * 60 * 60 * 1000) // 7 days ago
             }
@@ -407,9 +408,13 @@ export class WarmupService {
   
 
   async analytics(id: string){
-    const lastsevenday = this.getEmailCountPerDay(id)
+    const lastsevenday = this.getEmailCountPerDay(id);
+    const overall = this.aggregateSpamEmailsByDate(id);
     console.log(lastsevenday,"lastsevenday");  
-    return lastsevenday;
+    const [lastSevenday, overalls] = await Promise.all([lastsevenday, overall]);
+
+    // Return the combined result
+    return { lastSevenday, overalls };
   }
 
 
